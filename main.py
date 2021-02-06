@@ -72,7 +72,8 @@ def main():
     ConsoleOutput().Print(predictions)
 
     # Save CSV file
-    CSVOutput(frame_number, roi_x, roi_y).SaveCSVFile(predictions, output_file_directory)
+    filename = os.path.basename(video_file_path).replace('mp4', 'csv')
+    CSVOutput(frame_number, roi_x, roi_y).SaveCSVFile(predictions, output_file_directory, filename)
 
 
 
