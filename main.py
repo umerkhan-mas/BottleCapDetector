@@ -11,7 +11,7 @@ from BottleCapDetector.Summer.ContourOutput import ContourOutput
 from BottleCapDetector.Summer.ConsoleSummer import ConsoleOutput
 from BottleCapDetector.Summer.CSVSummer import CSVOutput
 
-video_file_path = r'''/home/cvvp/Projects/Videos/9034294_ukhan2s_1.mp4'''
+video_file_path = r'''/home/cvvp/Projects/Videos/1.mp4'''
 output_file_directory = r'''/home/cvvp/Projects/Videos/Outputs'''
 print_debug_files = False
 
