@@ -13,6 +13,7 @@ from BottleCapDetector.Summer.CSVSummer import CSVOutput
 
 video_file_path = r'''/home/cvvp/Projects/Videos/9034294_ukhan2s_1.mp4'''
 output_file_directory = r'''/home/cvvp/Projects/Videos/Outputs'''
+print_debug_files = False
 
 def main():
     if not os.path.isfile(video_file_path)  or not video_file_path.endswith('.mp4'):
@@ -32,7 +33,8 @@ def main():
 
     image, frame_number = v2iExtractor.GetImageAndFrameNumber()
 
-    cv.imwrite(os.path.join(output_file_directory, 'video2image.png'), image)
+    if print_debug_files:
+        cv.imwrite(os.path.join(output_file_directory, 'video2image.png'), image)
 
     if image is None or frame_number is None:
         raise('Cannot obtain image and frame number from video.')
@@ -40,9 +42,10 @@ def main():
     # Extract region of interest
     roiExtractor = ROIFinder(2)
 
-    roiImage, roi_x, roi_y = roiExtractor.GetROI(image)
-
-    cv.imwrite(os.path.join(output_file_directory, 'ROI.png'), roiImage)
+    roiImage, roi_x, roi_y = roiExtractor.GetROI(image)    
+    
+    if print_debug_files:
+        cv.imwrite(os.path.join(output_file_directory, 'ROI.png'), roiImage)
 
     if roiImage is None:
         raise Exception('Cannot obtain region of interest image.')
@@ -60,8 +63,10 @@ def main():
     # Outputter - Summer
 
     # Draw an output image
-    ContourOutput().DrawContourImage(cp_image, predictions)
-    cv.imwrite(os.path.join(output_file_directory, 'contours.png'), cp_image)
+    ContourOutput().DrawContourImage(cp_image, predictions)    
+    
+    if print_debug_files:
+        cv.imwrite(os.path.join(output_file_directory, 'contours.png'), cp_image)
 
     # Print output to console
     ConsoleOutput().Print(predictions)
