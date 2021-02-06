@@ -41,9 +41,10 @@ class ROIFinder:
         image = ConvertImage2GrayScale(image)
 
         edge_image = self.__sobelFilter__.GetSobelImage(image, ksize=3)
+        # edge_image = cv.Canny(image, 50, 255)
 
         ret,thresh_image = cv.threshold(edge_image,50,255,0)
-        contours, hierarchy = cv.findContours(thresh_image, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
+        contours, hierarchy = cv.findContours(thresh_image, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
         image_area = image.shape[0] * image.shape[1]
         max_contour = None
@@ -56,7 +57,7 @@ class ROIFinder:
             hull = cv.convexHull(contour)
             contour_area = cv.contourArea(hull)
             
-            if contour_area >= 0.20*image_area and contour_area <= 0.7*image_area and CheckContourIntersection(contour, image_center_box):
+            if contour_area >= 0.20*image_area and contour_area <= 0.8*image_area and CheckContourIntersection(contour, image_center_box):
                 if contour_area > max_area:
                     max_area = contour_area
                     max_contour = contour
@@ -68,9 +69,9 @@ class ROIFinder:
             # box = np.int0(box)
             x, y, w, h = cv.boundingRect(max_contour)
             masked_image = MaskImage(img, hull)
-            return CropBoundingBox(masked_image, x, y, w, h)
+            return CropBoundingBox(masked_image, x, y, w, h), x, y
         
-        return img
+        return img, 0, 0
 
 
 

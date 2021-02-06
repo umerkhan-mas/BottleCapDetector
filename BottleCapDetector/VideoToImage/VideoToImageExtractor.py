@@ -3,17 +3,18 @@ import numpy as np
 from BottleCapDetector.Helpers.Helper import ConvertImage2GrayScale
 
 class Video2ImageExtractor:
-    def __init__(self, video, startDiscard=0.1, endDiscard=0.1, framesPerSecondCheck=10):
+    def __init__(self, video, startDiscard=0.2, endDiscard=0.25, framesPerSecondCheck=6, autoDetectStartFrame=False):
         if type(video) == type(cv.VideoCapture()):
             self.__video__ = video
         elif (type(video) == type('')):
             self.__video__ = cv.VideoCapture(video)
         else:
             raise Exception('Cannot create Video2ImageExtractor. Incorrect path or video type')
-        
+                
         self.__startDiscard__ = startDiscard
         self.__endDiscard__ = endDiscard
         self.__framesPerSecondCheck__ = framesPerSecondCheck
+        self.__autoDetectStartFrame__ = autoDetectStartFrame
     
     def GetVideoFrameCountAndFPS(self):
         if not self.__video__.isOpened(): 
@@ -49,9 +50,24 @@ class Video2ImageExtractor:
         skipFrameCount = int(np.floor(fps/self.__framesPerSecondCheck__))
 
         frame_start = int(frames*self.__startDiscard__)
-        frame_end = frames - int(frames*self.__endDiscard__ )
+        frame_end = frames - int(frames*self.__endDiscard__ )        
         
-        self.__video__.set(1, frame_start)
+        if self.__autoDetectStartFrame__:
+            init_frame_difference = 1
+            ret, previousframe = self.__video__.read()
+            frame_start = 0
+            while (init_frame_difference > 0.901) and (init_frame_difference < 1.009):
+                self.SkipFrames(self.__video__, skipFrameCount)
+                ret, currentframe = self.__video__.read()
+                frame_start += skipFrameCount + 1
+
+                if not self.__video__.isOpened():
+                    raise Exception('Could not auto detect intial frame.')
+                # init_frame_difference = self.GetAbsoluteFrameDifference(currentframe, previousframe)
+                init_frame_difference = np.sum(currentframe) * 1.0 / np.sum(previousframe)
+                previousframe = currentframe
+        else:
+            self.__video__.set(1, frame_start)
         current_frame_number = frame_start
 
         if frame_start < 0 or frame_end < 0 or frame_start >= frame_end:
@@ -66,6 +82,9 @@ class Video2ImageExtractor:
         loop_count = (frame_end-frame_start-1)
         if skipFrameCount > 0:
             loop_count = int((frame_end-frame_start-1)/skipFrameCount)
+
+
+        
 
         for i in range(loop_count):
             self.SkipFrames(self.__video__, skipFrameCount)
