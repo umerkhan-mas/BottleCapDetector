@@ -85,6 +85,7 @@ class Hog_Model_Trainer:
         self.PrintConfusionMatrix(test_y, pred_y)
 
     def PrintConfusionMatrix(self, actual_y, predicted_y):
+        # https://stackoverflow.com/a/29877565
         # print(confusion_matrix(actual_y, predicted_y))
         df_confusion = pd.crosstab(actual_y, predicted_y, rownames=['Actual'], colnames=['Predicted'], margins=True)
         print(df_confusion)
