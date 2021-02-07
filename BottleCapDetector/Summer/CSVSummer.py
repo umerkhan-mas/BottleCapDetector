@@ -20,8 +20,8 @@ class CSVOutput:
 
                 csv_file += "{frame_number},{x_cord},{y_cord},'{label}'\n".format(
                     frame_number = self.__framenumber__,
-                    x_cord = self.__roiX__ + x,
-                    y_cord = self.__roiY__ + y,
+                    x_cord = self.__roiX__ + x + int(w/2),
+                    y_cord = self.__roiY__ + y + int(h/2),
                     label = label) 
 
         return csv_file
