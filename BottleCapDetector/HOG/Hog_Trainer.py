@@ -7,6 +7,7 @@ from BottleCapDetector.Helpers.Helper import ClusterImage
 from sklearn.metrics import confusion_matrix
 import pandas as pd
 
+# https://stackoverflow.com/a/31042366
 winSize = (32,32)
 blockSize = (16,16)
 blockStride = (8,8)
