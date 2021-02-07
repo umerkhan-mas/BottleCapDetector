@@ -4,6 +4,8 @@ import os, glob
 from sklearn import svm, neighbors, tree , ensemble, naive_bayes 
 import pickle
 from BottleCapDetector.Helpers.Helper import ClusterImage
+from sklearn.metrics import confusion_matrix
+import pandas as pd
 
 winSize = (32,32)
 blockSize = (16,16)
@@ -71,13 +73,21 @@ class Hog_Model_Trainer:
         accuracies = {}
         for key,value in models.items():
             accuracies[key] = value.score(test_x, test_y)
-            print(value.classes_)
+            # print(value.classes_)
             filename = key + '.sav'
             pickle.dump(value, open(os.path.join(self.model_output_directory,filename), 'wb'))
 
         for key, value in accuracies.items():
             print('Accuracy for {kernal} is {acc}'.format(kernal = key, acc = value))
-        
+
+
+        pred_y = models['svm_poly'].predict(test_x)
+        self.PrintConfusionMatrix(test_y, pred_y)
+
+    def PrintConfusionMatrix(self, actual_y, predicted_y):
+        # print(confusion_matrix(actual_y, predicted_y))
+        df_confusion = pd.crosstab(actual_y, predicted_y, rownames=['Actual'], colnames=['Predicted'], margins=True)
+        print(df_confusion)
 
 
     def reshapeDataset(self, ds):
